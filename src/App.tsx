@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Contact from "./pages/Contact";
 import Services from "./pages/Services";
+import Admin from "./pages/Admin";
 import { Toaster } from "./components/ui/sonner";
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
         <Route path="/" element={<Index />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/services" element={<Services />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
       <Toaster />
     </Router>
