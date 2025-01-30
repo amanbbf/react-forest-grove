@@ -2,6 +2,7 @@ import MainNav from "@/components/MainNav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Code, Users, Lightbulb, Award, BadgeCheck } from "lucide-react";
+import { CertificateVerification } from "@/components/CertificateVerification";
 
 const Index = () => {
   const services = [
@@ -98,6 +99,14 @@ const Index = () => {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Certificate Verification Section */}
+      <section className="py-20 bg-accent/20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Verify Certificate</h2>
+          <CertificateVerification />
         </div>
       </section>
 
