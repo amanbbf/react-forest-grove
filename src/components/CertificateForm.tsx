@@ -22,8 +22,10 @@ const formSchema = z.object({
   description: z.string().optional(),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 export function CertificateForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       certificate_number: "",
@@ -34,14 +36,22 @@ export function CertificateForm() {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: FormValues) => {
     try {
-      const { error } = await supabase.from("certificates").insert([values]);
+      const { error } = await supabase.from("certificates").insert({
+        certificate_number: values.certificate_number,
+        holder_name: values.holder_name,
+        certification_type: values.certification_type,
+        expiry_date: values.expiry_date,
+        description: values.description || null,
+      });
+
       if (error) throw error;
       toast.success("Certificate added successfully");
       form.reset();
     } catch (error) {
       toast.error("Error adding certificate");
+      console.error("Error:", error);
     }
   };
 
