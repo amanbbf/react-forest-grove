@@ -1,7 +1,7 @@
 import MainNav from "@/components/MainNav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Code, Users, Lightbulb } from "lucide-react";
+import { ArrowRight, Code, Users, Lightbulb, Award, BadgeCheck } from "lucide-react";
 
 const Index = () => {
   const services = [
@@ -19,6 +19,24 @@ const Index = () => {
       icon: <Lightbulb className="w-6 h-6" />,
       title: "Digital Innovation",
       description: "Transform your business with cutting-edge technology solutions and digital strategy consulting."
+    }
+  ];
+
+  const certifications = [
+    {
+      icon: <Award className="w-8 h-8 text-primary" />,
+      name: "ISO 27001 Certified",
+      description: "Information Security Management System certification ensuring highest security standards."
+    },
+    {
+      icon: <BadgeCheck className="w-8 h-8 text-primary" />,
+      name: "AWS Advanced Consulting Partner",
+      description: "Recognized expertise in AWS cloud solutions and implementations."
+    },
+    {
+      icon: <Award className="w-8 h-8 text-primary" />,
+      name: "Microsoft Gold Partner",
+      description: "Elite partnership status for Microsoft technology solutions and services."
     }
   ];
 
@@ -76,6 +94,31 @@ const Index = () => {
                   </div>
                   <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
                   <p className="text-muted-foreground">{service.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Certifications Section */}
+      <section className="py-20 bg-accent/20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Active Certifications</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {certifications.map((cert, index) => (
+              <Card 
+                key={index} 
+                className="border-2 border-accent hover:border-primary transition-colors duration-300"
+              >
+                <CardContent className="pt-6">
+                  <div className="flex flex-col items-center">
+                    <div className="mb-4">
+                      {cert.icon}
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2 text-center">{cert.name}</h3>
+                    <p className="text-muted-foreground text-center">{cert.description}</p>
+                  </div>
                 </CardContent>
               </Card>
             ))}
