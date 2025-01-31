@@ -2,9 +2,10 @@ import { useState } from "react";
 import { CertificateList } from "./CertificateList";
 import { CertificateForm } from "./CertificateForm";
 import { Settings } from "./Settings";
+import UpdatesManagement from "./UpdatesManagement";
 
 export function AdminDashboard() {
-  const [currentView, setCurrentView] = useState<"viewAll" | "add" | "settings">("viewAll");
+  const [currentView, setCurrentView] = useState<"viewAll" | "add" | "settings" | "updates">("viewAll");
 
   const renderContent = () => {
     switch (currentView) {
@@ -12,6 +13,8 @@ export function AdminDashboard() {
         return <CertificateForm />;
       case "settings":
         return <Settings />;
+      case "updates":
+        return <UpdatesManagement />;
       default:
         return <CertificateList />;
     }

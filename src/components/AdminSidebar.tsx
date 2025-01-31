@@ -1,4 +1,4 @@
-import { FileText, Plus, Settings } from "lucide-react";
+import { FileText, Plus, Settings, Bell } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -20,6 +20,11 @@ const menuItems = [
     title: "Add Certificate",
     icon: Plus,
     action: "add"
+  },
+  {
+    title: "Updates",
+    icon: Bell,
+    action: "updates"
   },
   {
     title: "Settings",
