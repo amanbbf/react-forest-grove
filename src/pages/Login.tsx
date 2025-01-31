@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { Label } from "@/components/ui/label";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -12,10 +13,23 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const validateForm = () => {
+    if (!email || !password) {
+      toast.error("Please fill in all fields");
+      return false;
+    }
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return false;
+    }
+    return true;
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    if (!validateForm()) return;
     
+    setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -24,9 +38,18 @@ export default function Login() {
 
       if (error) throw error;
       
+      toast.success("Successfully logged in!");
       navigate("/admin");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to login");
+      if (error instanceof Error) {
+        if (error.message.includes("Invalid login credentials")) {
+          toast.error("Invalid email or password");
+        } else {
+          toast.error(error.message);
+        }
+      } else {
+        toast.error("Failed to login");
+      }
     } finally {
       setLoading(false);
     }
@@ -34,8 +57,9 @@ export default function Login() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    if (!validateForm()) return;
     
+    setLoading(true);
     try {
       const { error } = await supabase.auth.signUp({
         email,
@@ -46,7 +70,15 @@ export default function Login() {
       
       toast.success("Check your email for the confirmation link!");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to sign up");
+      if (error instanceof Error) {
+        if (error.message.includes("weak_password")) {
+          toast.error("Password is too weak. It must be at least 6 characters long.");
+        } else {
+          toast.error(error.message);
+        }
+      } else {
+        toast.error("Failed to sign up");
+      }
     } finally {
       setLoading(false);
     }
@@ -64,21 +96,26 @@ export default function Login() {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
               <Input
+                id="email"
                 type="email"
-                placeholder="Email"
+                placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
               <Input
+                id="password"
                 type="password"
-                placeholder="Password"
+                placeholder="Enter your password (min. 6 characters)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                minLength={6}
               />
             </div>
           </form>
