@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
-import { Home, Mail, Briefcase, UserCircle2 } from "lucide-react";
+import { Home, Mail, Briefcase, UserCircle2, Bell } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   NavigationMenu,
@@ -18,8 +18,21 @@ const MainNav = () => {
   const navItems = [
     { label: "Home", icon: <Home className="w-4 h-4" />, path: "/" },
     { label: "Contact", icon: <Mail className="w-4 h-4" />, path: "/contact" },
-    { label: "Our Services", icon: <Briefcase className="w-4 h-4" />, path: "/services" },
-    { label: "Admin Login", icon: <UserCircle2 className="w-4 h-4" />, path: "/admin" },
+    {
+      label: "Our Services",
+      icon: <Briefcase className="w-4 h-4" />,
+      path: "/services",
+    },
+    {
+      label: "Updates",
+      icon: <Bell className="w-4 h-4" />,
+      path: "/updates",
+    },
+    {
+      label: "Admin Login",
+      icon: <UserCircle2 className="w-4 h-4" />,
+      path: "/admin",
+    },
   ];
 
   return (
