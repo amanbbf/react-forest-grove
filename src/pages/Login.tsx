@@ -35,12 +35,17 @@ export default function Login() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const validateForm = () => {
     if (!email || !password) {
       toast.error("Please fill in all fields");
       return false;
     }
-    if (!/\S+@\S+\.\S+/.test(email)) {
+    if (!validateEmail(email)) {
       toast.error("Please enter a valid email address");
       return false;
     }
@@ -62,17 +67,22 @@ export default function Login() {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes("Email not confirmed")) {
+          toast.error("Please confirm your email address before logging in. Check your inbox for the confirmation link.");
+        } else if (error.message.includes("Invalid login credentials")) {
+          toast.error("Invalid email or password");
+        } else {
+          toast.error(error.message);
+        }
+        return;
+      }
       
       toast.success("Successfully logged in!");
       navigate("/admin");
     } catch (error) {
       if (error instanceof Error) {
-        if (error.message.includes("Invalid login credentials")) {
-          toast.error("Invalid email or password");
-        } else {
-          toast.error(error.message);
-        }
+        toast.error(error.message);
       } else {
         toast.error("Failed to login");
       }
@@ -90,18 +100,26 @@ export default function Login() {
       const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: window.location.origin + '/admin'
+        }
       });
 
-      if (error) throw error;
-      
-      toast.success("Check your email for the confirmation link!");
-    } catch (error) {
-      if (error instanceof Error) {
+      if (error) {
         if (error.message.includes("User already registered")) {
           toast.error("This email is already registered. Please login instead.");
+        } else if (error.message.includes("invalid")) {
+          toast.error("Please enter a valid email address");
         } else {
           toast.error(error.message);
         }
+        return;
+      }
+      
+      toast.success("Please check your email for the confirmation link!");
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
       } else {
         toast.error("Failed to sign up");
       }
