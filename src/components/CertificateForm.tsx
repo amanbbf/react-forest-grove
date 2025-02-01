@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const formSchema = z.object({
   certificate_number: z.string().min(1, "Certificate number is required"),
@@ -30,6 +30,9 @@ interface CertificateFormProps {
 }
 
 export function CertificateForm({ certificate }: CertificateFormProps) {
+  const [file, setFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,10 +56,45 @@ export function CertificateForm({ certificate }: CertificateFormProps) {
     }
   }, [certificate, form]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  const uploadFile = async (certificateId: string) => {
+    if (!file) return null;
+
+    const fileExt = file.name.split('.').pop();
+    const filePath = `${certificateId}/${crypto.randomUUID()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('certificates')
+      .upload(filePath, file);
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('certificates')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  };
+
   const onSubmit = async (values: FormValues) => {
     try {
+      setIsUploading(true);
+      
       if (certificate) {
         // Update existing certificate
+        let fileUrl = certificate.file_url;
+        
+        if (file) {
+          fileUrl = await uploadFile(certificate.id);
+        }
+
         const { error } = await supabase
           .from("certificates")
           .update({
@@ -65,6 +103,7 @@ export function CertificateForm({ certificate }: CertificateFormProps) {
             certification_type: values.certification_type,
             expiry_date: values.expiry_date,
             description: values.description || null,
+            file_url: fileUrl,
           })
           .eq("id", certificate.id);
 
@@ -72,21 +111,40 @@ export function CertificateForm({ certificate }: CertificateFormProps) {
         toast.success("Certificate updated successfully");
       } else {
         // Create new certificate
-        const { error } = await supabase.from("certificates").insert({
-          certificate_number: values.certificate_number,
-          holder_name: values.holder_name,
-          certification_type: values.certification_type,
-          expiry_date: values.expiry_date,
-          description: values.description || null,
-        });
+        const { data: newCert, error: insertError } = await supabase
+          .from("certificates")
+          .insert({
+            certificate_number: values.certificate_number,
+            holder_name: values.holder_name,
+            certification_type: values.certification_type,
+            expiry_date: values.expiry_date,
+            description: values.description || null,
+          })
+          .select()
+          .single();
 
-        if (error) throw error;
+        if (insertError) throw insertError;
+
+        if (file && newCert) {
+          const fileUrl = await uploadFile(newCert.id);
+          
+          const { error: updateError } = await supabase
+            .from("certificates")
+            .update({ file_url: fileUrl })
+            .eq("id", newCert.id);
+
+          if (updateError) throw updateError;
+        }
+
         toast.success("Certificate added successfully");
         form.reset();
+        setFile(null);
       }
     } catch (error) {
       toast.error(certificate ? "Error updating certificate" : "Error adding certificate");
       console.error("Error:", error);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -162,8 +220,22 @@ export function CertificateForm({ certificate }: CertificateFormProps) {
               </FormItem>
             )}
           />
-          <Button type="submit">
-            {certificate ? "Update Certificate" : "Add Certificate"}
+          <div className="space-y-2">
+            <FormLabel>Certificate File</FormLabel>
+            <Input
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={handleFileChange}
+              className="cursor-pointer"
+            />
+            {certificate?.file_url && (
+              <p className="text-sm text-muted-foreground">
+                Current file: <a href={certificate.file_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">View file</a>
+              </p>
+            )}
+          </div>
+          <Button type="submit" disabled={isUploading}>
+            {isUploading ? "Uploading..." : certificate ? "Update Certificate" : "Add Certificate"}
           </Button>
         </form>
       </Form>

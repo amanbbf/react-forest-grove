@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { toast } from "sonner";
-import { Shield, ShieldCheck, ShieldX } from "lucide-react";
+import { Shield, ShieldCheck, ShieldX, Download } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ type Certificate = {
   certification_type: string;
   status: string;
   description: string | null;
+  file_url: string | null;
 };
 
 export function CertificateVerification() {
@@ -148,6 +149,24 @@ export function CertificateVerification() {
                   <div className="grid grid-cols-3 gap-4">
                     <dt className="font-medium">Description:</dt>
                     <dd className="col-span-2">{certificate.description}</dd>
+                  </div>
+                )}
+                {certificate.file_url && (
+                  <div className="grid grid-cols-3 gap-4">
+                    <dt className="font-medium">Certificate File:</dt>
+                    <dd className="col-span-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        asChild
+                      >
+                        <a href={certificate.file_url} target="_blank" rel="noopener noreferrer">
+                          <Download className="h-4 w-4" />
+                          Download Certificate
+                        </a>
+                      </Button>
+                    </dd>
                   </div>
                 )}
               </dl>
