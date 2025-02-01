@@ -35,9 +35,10 @@ const menuItems = [
 
 interface AdminSidebarProps {
   onActionSelect?: (action: string) => void;
+  currentView?: string;
 }
 
-export function AdminSidebar({ onActionSelect }: AdminSidebarProps) {
+export function AdminSidebar({ onActionSelect, currentView }: AdminSidebarProps) {
   return (
     <Sidebar>
       <SidebarContent>
@@ -50,6 +51,7 @@ export function AdminSidebar({ onActionSelect }: AdminSidebarProps) {
                   <SidebarMenuButton 
                     onClick={() => onActionSelect?.(item.action)}
                     tooltip={item.title}
+                    data-active={currentView === item.action}
                   >
                     <item.icon className="w-4 h-4" />
                     <span>{item.title}</span>

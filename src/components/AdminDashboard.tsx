@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AdminSidebar } from "./AdminSidebar";
 import { CertificateList } from "./CertificateList";
 import { CertificateForm } from "./CertificateForm";
 import { Settings } from "./Settings";
@@ -21,10 +22,13 @@ export function AdminDashboard() {
   };
 
   return (
-    <main className="flex-1 p-6">
-      <div className="container mx-auto">
-        {renderContent()}
-      </div>
-    </main>
+    <div className="flex min-h-screen w-full">
+      <AdminSidebar onActionSelect={setCurrentView} currentView={currentView} />
+      <main className="flex-1 p-6">
+        <div className="container mx-auto">
+          {renderContent()}
+        </div>
+      </main>
+    </div>
   );
 }
