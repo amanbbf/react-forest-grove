@@ -16,6 +16,7 @@ export type Database = {
           created_at: string
           description: string | null
           expiry_date: string
+          file_url: string | null
           holder_name: string
           id: string
           issue_date: string
@@ -28,6 +29,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           expiry_date: string
+          file_url?: string | null
           holder_name: string
           id?: string
           issue_date?: string
@@ -40,6 +42,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           expiry_date?: string
+          file_url?: string | null
           holder_name?: string
           id?: string
           issue_date?: string

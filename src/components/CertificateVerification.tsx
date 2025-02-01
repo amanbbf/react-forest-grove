@@ -51,7 +51,7 @@ export function CertificateVerification() {
       if (error) throw error;
 
       if (data) {
-        setCertificate(data);
+        setCertificate(data as Certificate);
         toast.success("Certificate found!");
       } else {
         toast.error("No matching certificate found");
@@ -74,7 +74,7 @@ export function CertificateVerification() {
             Certificate Verification
           </CardTitle>
           <CardDescription>
-            Verify the authenticity of a certificate by entering the last 4 digits and holder name
+            Verify the authenticity of a certificate by entering the certificate number and holder name
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -85,7 +85,7 @@ export function CertificateVerification() {
                 name="certificateNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Last 4 Digits</FormLabel>
+                    <FormLabel>Certificate Number</FormLabel>
                     <FormControl>
                       <Input placeholder="Enter certificate number" {...field} />
                     </FormControl>

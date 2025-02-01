@@ -98,11 +98,7 @@ export function CertificateForm({ certificate }: CertificateFormProps) {
         const { error } = await supabase
           .from("certificates")
           .update({
-            certificate_number: values.certificate_number,
-            holder_name: values.holder_name,
-            certification_type: values.certification_type,
-            expiry_date: values.expiry_date,
-            description: values.description || null,
+            ...values,
             file_url: fileUrl,
           })
           .eq("id", certificate.id);
@@ -114,11 +110,8 @@ export function CertificateForm({ certificate }: CertificateFormProps) {
         const { data: newCert, error: insertError } = await supabase
           .from("certificates")
           .insert({
-            certificate_number: values.certificate_number,
-            holder_name: values.holder_name,
-            certification_type: values.certification_type,
-            expiry_date: values.expiry_date,
-            description: values.description || null,
+            ...values,
+            status: 'valid',
           })
           .select()
           .single();
