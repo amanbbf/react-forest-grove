@@ -5,8 +5,10 @@ import { CertificateForm } from "./CertificateForm";
 import { Settings } from "./Settings";
 import UpdatesManagement from "./UpdatesManagement";
 
+type ViewType = "viewAll" | "add" | "settings" | "updates";
+
 export function AdminDashboard() {
-  const [currentView, setCurrentView] = useState<"viewAll" | "add" | "settings" | "updates">("viewAll");
+  const [currentView, setCurrentView] = useState<ViewType>("viewAll");
 
   const renderContent = () => {
     switch (currentView) {
@@ -21,9 +23,13 @@ export function AdminDashboard() {
     }
   };
 
+  const handleViewChange = (action: string) => {
+    setCurrentView(action as ViewType);
+  };
+
   return (
     <div className="flex min-h-screen w-full">
-      <AdminSidebar onActionSelect={setCurrentView} currentView={currentView} />
+      <AdminSidebar onActionSelect={handleViewChange} currentView={currentView} />
       <main className="flex-1 p-6">
         <div className="container mx-auto">
           {renderContent()}

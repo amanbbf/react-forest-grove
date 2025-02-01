@@ -10,26 +10,28 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
+type ViewType = "viewAll" | "add" | "settings" | "updates";
+
 const menuItems = [
   {
     title: "All Certificates",
     icon: FileText,
-    action: "viewAll"
+    action: "viewAll" as ViewType
   },
   {
     title: "Add Certificate",
     icon: Plus,
-    action: "add"
+    action: "add" as ViewType
   },
   {
     title: "Updates",
     icon: Bell,
-    action: "updates"
+    action: "updates" as ViewType
   },
   {
     title: "Settings",
     icon: Settings,
-    action: "settings"
+    action: "settings" as ViewType
   }
 ];
 
