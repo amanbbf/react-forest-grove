@@ -5,25 +5,34 @@ import { CertificateForm } from "./CertificateForm";
 import { Settings } from "./Settings";
 import UpdatesManagement from "./UpdatesManagement";
 
-type ViewType = "viewAll" | "add" | "settings" | "updates";
+type ViewType = "viewAll" | "add" | "settings" | "updates" | "edit";
 
 export function AdminDashboard() {
   const [currentView, setCurrentView] = useState<ViewType>("viewAll");
+  const [selectedCertificate, setSelectedCertificate] = useState<any>(null);
 
   const renderContent = () => {
     switch (currentView) {
       case "add":
         return <CertificateForm />;
+      case "edit":
+        return <CertificateForm certificate={selectedCertificate} />;
       case "settings":
         return <Settings />;
       case "updates":
         return <UpdatesManagement />;
       default:
-        return <CertificateList />;
+        return <CertificateList onEdit={(cert) => {
+          setSelectedCertificate(cert);
+          setCurrentView("edit");
+        }} />;
     }
   };
 
   const handleViewChange = (action: string) => {
+    if (action === "viewAll") {
+      setSelectedCertificate(null);
+    }
     setCurrentView(action as ViewType);
   };
 

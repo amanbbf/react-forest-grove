@@ -12,7 +12,11 @@ import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-export function CertificateList() {
+interface CertificateListProps {
+  onEdit: (certificate: any) => void;
+}
+
+export function CertificateList({ onEdit }: CertificateListProps) {
   const { data: certificates, isLoading } = useQuery({
     queryKey: ["certificates"],
     queryFn: async () => {
@@ -65,7 +69,11 @@ export function CertificateList() {
               <TableCell>{cert.certification_type}</TableCell>
               <TableCell>{cert.status}</TableCell>
               <TableCell className="space-x-2">
-                <Button variant="ghost" size="icon">
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => onEdit(cert)}
+                >
                   <Edit className="h-4 w-4" />
                 </Button>
                 <Button 

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   certificate_number: z.string().min(1, "Certificate number is required"),
@@ -24,7 +25,11 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function CertificateForm() {
+interface CertificateFormProps {
+  certificate?: any;
+}
+
+export function CertificateForm({ certificate }: CertificateFormProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -36,28 +41,60 @@ export function CertificateForm() {
     },
   });
 
+  useEffect(() => {
+    if (certificate) {
+      form.reset({
+        certificate_number: certificate.certificate_number,
+        holder_name: certificate.holder_name,
+        certification_type: certificate.certification_type,
+        expiry_date: certificate.expiry_date,
+        description: certificate.description || "",
+      });
+    }
+  }, [certificate, form]);
+
   const onSubmit = async (values: FormValues) => {
     try {
-      const { error } = await supabase.from("certificates").insert({
-        certificate_number: values.certificate_number,
-        holder_name: values.holder_name,
-        certification_type: values.certification_type,
-        expiry_date: values.expiry_date,
-        description: values.description || null,
-      });
+      if (certificate) {
+        // Update existing certificate
+        const { error } = await supabase
+          .from("certificates")
+          .update({
+            certificate_number: values.certificate_number,
+            holder_name: values.holder_name,
+            certification_type: values.certification_type,
+            expiry_date: values.expiry_date,
+            description: values.description || null,
+          })
+          .eq("id", certificate.id);
 
-      if (error) throw error;
-      toast.success("Certificate added successfully");
-      form.reset();
+        if (error) throw error;
+        toast.success("Certificate updated successfully");
+      } else {
+        // Create new certificate
+        const { error } = await supabase.from("certificates").insert({
+          certificate_number: values.certificate_number,
+          holder_name: values.holder_name,
+          certification_type: values.certification_type,
+          expiry_date: values.expiry_date,
+          description: values.description || null,
+        });
+
+        if (error) throw error;
+        toast.success("Certificate added successfully");
+        form.reset();
+      }
     } catch (error) {
-      toast.error("Error adding certificate");
+      toast.error(certificate ? "Error updating certificate" : "Error adding certificate");
       console.error("Error:", error);
     }
   };
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <h2 className="text-2xl font-bold">Add New Certificate</h2>
+      <h2 className="text-2xl font-bold">
+        {certificate ? "Edit Certificate" : "Add New Certificate"}
+      </h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -125,7 +162,9 @@ export function CertificateForm() {
               </FormItem>
             )}
           />
-          <Button type="submit">Add Certificate</Button>
+          <Button type="submit">
+            {certificate ? "Update Certificate" : "Add Certificate"}
+          </Button>
         </form>
       </Form>
     </div>
