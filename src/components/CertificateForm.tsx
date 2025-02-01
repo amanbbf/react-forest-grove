@@ -58,7 +58,17 @@ export function CertificateForm({ certificate }: CertificateFormProps) {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      const fileType = selectedFile.type;
+      
+      // Check if file is JPEG or PNG
+      if (!['image/jpeg', 'image/png'].includes(fileType)) {
+        toast.error('Please upload only JPEG or PNG images');
+        e.target.value = ''; // Reset input
+        return;
+      }
+      
+      setFile(selectedFile);
     }
   };
 
@@ -222,17 +232,22 @@ export function CertificateForm({ certificate }: CertificateFormProps) {
             )}
           />
           <div className="space-y-2">
-            <FormLabel>Certificate File</FormLabel>
+            <FormLabel>Certificate Image</FormLabel>
             <Input
               type="file"
-              accept=".pdf,.doc,.docx"
+              accept="image/jpeg,image/png"
               onChange={handleFileChange}
               className="cursor-pointer"
             />
             {certificate?.file_url && (
-              <p className="text-sm text-muted-foreground">
-                Current file: <a href={certificate.file_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">View file</a>
-              </p>
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Current file:</p>
+                <img 
+                  src={certificate.file_url} 
+                  alt="Current certificate" 
+                  className="max-w-xs rounded-lg shadow-sm"
+                />
+              </div>
             )}
           </div>
           <Button type="submit" disabled={isUploading}>
