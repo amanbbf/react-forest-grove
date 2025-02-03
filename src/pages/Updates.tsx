@@ -42,9 +42,10 @@ const Updates = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    {update.content}
-                  </p>
+                  <div 
+                    className="prose max-w-none text-sm text-muted-foreground"
+                    dangerouslySetInnerHTML={{ __html: update.content }}
+                  />
                 </CardContent>
               </Card>
             ))}

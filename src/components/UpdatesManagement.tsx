@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "./RichTextEditor";
 import {
   Card,
   CardContent,
@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
 interface Update {
   id: string;
@@ -160,14 +160,11 @@ const UpdatesManagement = () => {
               />
             </div>
             <div>
-              <Textarea
-                placeholder="Update Content"
-                value={newUpdate.content}
-                onChange={(e) =>
-                  setNewUpdate({ ...newUpdate, content: e.target.value })
+              <RichTextEditor
+                content={newUpdate.content}
+                onChange={(content) =>
+                  setNewUpdate({ ...newUpdate, content: content })
                 }
-                required
-                className="min-h-[100px]"
               />
             </div>
             <div className="flex gap-2">
@@ -222,7 +219,10 @@ const UpdatesManagement = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">{update.content}</p>
+              <div 
+                className="prose max-w-none text-sm text-muted-foreground"
+                dangerouslySetInnerHTML={{ __html: update.content }}
+              />
             </CardContent>
           </Card>
         ))}
