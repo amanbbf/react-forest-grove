@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { AdminSidebar } from "@/components/AdminSidebar";
 import { AdminDashboard } from "@/components/AdminDashboard";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,10 +19,7 @@ export default function Admin() {
 
   return (
     <SidebarProvider defaultOpen>
-      <div className="min-h-screen flex w-full">
-        <AdminSidebar />
-        <AdminDashboard />
-      </div>
+      <AdminDashboard />
     </SidebarProvider>
   );
 }
