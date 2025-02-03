@@ -37,10 +37,10 @@ export function AdminDashboard() {
   };
 
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="flex min-h-screen w-full bg-background">
       <AdminSidebar onActionSelect={handleViewChange} currentView={currentView} />
-      <main className="flex-1 p-6">
-        <div className="container mx-auto">
+      <main className="flex-1 overflow-auto">
+        <div className="container mx-auto p-6 min-h-screen">
           {renderContent()}
         </div>
       </main>
