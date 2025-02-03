@@ -42,7 +42,7 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ onActionSelect, currentView }: AdminSidebarProps) {
   return (
-    <Sidebar>
+    <Sidebar className="h-screen border-r">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Certificate Management</SidebarGroupLabel>
