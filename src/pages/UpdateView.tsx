@@ -13,6 +13,8 @@ const UpdateView = () => {
   const { data: update, isLoading } = useQuery({
     queryKey: ["update", id],
     queryFn: async () => {
+      if (!id) throw new Error("Update ID is required");
+      
       const { data, error } = await supabase
         .from("updates")
         .select("*")
@@ -23,6 +25,7 @@ const UpdateView = () => {
       if (error) throw error;
       return data;
     },
+    enabled: !!id, // Only run the query if we have an ID
   });
 
   return (
