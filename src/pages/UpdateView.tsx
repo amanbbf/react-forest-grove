@@ -5,7 +5,7 @@ import MainNav from "@/components/MainNav";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const UpdateView = () => {
   const { id } = useParams();
@@ -20,7 +20,8 @@ const UpdateView = () => {
       const { data, error } = await supabase
         .from("updates")
         .select()
-        .match({ id, status: 'published' })
+        .eq('id', id)
+        .eq('status', 'published')
         .maybeSingle();
 
       if (error) {
