@@ -111,6 +111,7 @@ const UpdatesManagement = () => {
         ...currentUpdate,
         title: newUpdate.title,
         content: newUpdate.content,
+        status: newUpdate.status,
       });
     } else {
       createUpdateMutation.mutate(newUpdate);
