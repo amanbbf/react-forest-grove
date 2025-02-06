@@ -1,18 +1,10 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { RichTextEditor } from "./RichTextEditor";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { toast } from "sonner";
-import { Pencil, Trash2, Search } from "lucide-react";
+import { SearchBar } from "./updates/SearchBar";
+import { UpdateForm } from "./updates/UpdateForm";
+import { UpdateList } from "./updates/UpdateList";
 
 interface Update {
   id: string;
@@ -142,109 +134,27 @@ const UpdatesManagement = () => {
 
   return (
     <div className="space-y-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            {isEditing ? "Edit Update" : "Create New Update"}
-          </CardTitle>
-          <CardDescription>
-            {isEditing
-              ? "Modify the existing update"
-              : "Add a new update to share with users"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Input
-                placeholder="Update Title"
-                value={newUpdate.title}
-                onChange={(e) =>
-                  setNewUpdate({ ...newUpdate, title: e.target.value })
-                }
-                required
-              />
-            </div>
-            <div>
-              <RichTextEditor
-                content={newUpdate.content}
-                onChange={(content) =>
-                  setNewUpdate({ ...newUpdate, content: content })
-                }
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button type="submit">
-                {isEditing ? "Save Changes" : "Create Update"}
-              </Button>
-              {isEditing && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setIsEditing(false);
-                    setCurrentUpdate(null);
-                    setNewUpdate({ title: "", content: "", status: "published" });
-                  }}
-                >
-                  Cancel
-                </Button>
-              )}
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+      <UpdateForm
+        isEditing={isEditing}
+        update={newUpdate}
+        onUpdateChange={setNewUpdate}
+        onSubmit={handleSubmit}
+        onCancel={() => {
+          setIsEditing(false);
+          setCurrentUpdate(null);
+          setNewUpdate({ title: "", content: "", status: "published" });
+        }}
+      />
 
       <div className="mb-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search updates..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
+        <SearchBar value={searchQuery} onChange={setSearchQuery} />
       </div>
 
-      <div className="grid gap-4">
-        {filteredUpdates?.map((update: Update) => (
-          <Card key={update.id}>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle>{update.title}</CardTitle>
-                  <CardDescription>
-                    {new Date(update.published_at).toLocaleDateString()}
-                  </CardDescription>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => handleEdit(update)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => handleDelete(update.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div 
-                className="prose max-w-none text-sm text-muted-foreground"
-                dangerouslySetInnerHTML={{ __html: update.content }}
-              />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <UpdateList
+        updates={filteredUpdates}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
     </div>
   );
 };
