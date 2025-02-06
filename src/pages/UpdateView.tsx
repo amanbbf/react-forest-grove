@@ -5,10 +5,12 @@ import MainNav from "@/components/MainNav";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
+import { useToast } from "@/components/ui/use-toast";
 
 const UpdateView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const { data: update, isLoading } = useQuery({
     queryKey: ["update", id],
@@ -17,16 +19,47 @@ const UpdateView = () => {
       
       const { data, error } = await supabase
         .from("updates")
-        .select("*")
-        .eq("id", id)
-        .eq("status", "published")
-        .single();
+        .select()
+        .match({ id, status: 'published' })
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to load the update. Please try again later.",
+        });
+        throw error;
+      }
+
+      if (!data) {
+        toast({
+          variant: "destructive",
+          title: "Not Found",
+          description: "The requested update could not be found.",
+        });
+        throw new Error("Update not found");
+      }
+
       return data;
     },
-    enabled: !!id, // Only run the query if we have an ID
+    enabled: !!id,
   });
+
+  if (isLoading) {
+    return (
+      <>
+        <MainNav />
+        <div className="container mx-auto px-4 pt-24 pb-16">
+          <div className="flex justify-center items-center min-h-[200px]">
+            <div className="animate-pulse text-lg text-muted-foreground">
+              Loading update...
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -41,17 +74,11 @@ const UpdateView = () => {
           Back to Updates
         </Button>
 
-        {isLoading ? (
-          <div className="flex justify-center items-center min-h-[200px]">
-            <div className="animate-pulse text-lg text-muted-foreground">
-              Loading update...
-            </div>
-          </div>
-        ) : update ? (
+        {update ? (
           <article className="max-w-3xl mx-auto">
             <h1 className="text-4xl font-bold text-primary mb-4">{update.title}</h1>
             <p className="text-muted-foreground mb-8">
-              Published on {format(new Date(update.published_at), "MMMM dd, yyyy")}
+              Published on {format(new Date(update.published_at || ''), "MMMM dd, yyyy")}
             </p>
             <div 
               className="prose prose-lg max-w-none"
