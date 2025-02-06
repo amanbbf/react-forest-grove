@@ -67,9 +67,16 @@ export function CertificateVerification() {
 
   const handleDownload = async (fileUrl: string) => {
     try {
+      // Extract the file path from the public URL
+      const filePath = fileUrl.split('/certificates/').pop();
+      
+      if (!filePath) {
+        throw new Error('Invalid file URL');
+      }
+
       const { data, error } = await supabase.storage
         .from('certificates')
-        .download(fileUrl.replace('certificates/', ''));
+        .download(filePath);
       
       if (error) throw error;
       
@@ -77,11 +84,13 @@ export function CertificateVerification() {
       const url = URL.createObjectURL(data);
       const a = document.createElement('a');
       a.href = url;
-      a.download = fileUrl.split('/').pop() || 'certificate';
+      a.download = filePath.split('/').pop() || 'certificate';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      
+      toast.success('Certificate downloaded successfully');
     } catch (error) {
       console.error('Download error:', error);
       toast.error('Error downloading certificate');
