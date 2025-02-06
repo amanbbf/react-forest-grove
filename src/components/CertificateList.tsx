@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -9,7 +10,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Edit, Trash2, Search } from "lucide-react";
 import { toast } from "sonner";
 
 interface CertificateListProps {
@@ -17,6 +19,8 @@ interface CertificateListProps {
 }
 
 export function CertificateList({ onEdit }: CertificateListProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+
   const { data: certificates, isLoading } = useQuery({
     queryKey: ["certificates"],
     queryFn: async () => {
@@ -44,6 +48,12 @@ export function CertificateList({ onEdit }: CertificateListProps) {
     }
   };
 
+  const filteredCertificates = certificates?.filter(
+    (cert) =>
+      cert.certificate_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      cert.holder_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -51,6 +61,17 @@ export function CertificateList({ onEdit }: CertificateListProps) {
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold">Certificates</h2>
+      
+      <div className="relative">
+        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search by certificate number or holder name..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10"
+        />
+      </div>
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -62,7 +83,7 @@ export function CertificateList({ onEdit }: CertificateListProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {certificates?.map((cert) => (
+          {filteredCertificates?.map((cert) => (
             <TableRow key={cert.id}>
               <TableCell>{cert.certificate_number}</TableCell>
               <TableCell>{cert.holder_name}</TableCell>

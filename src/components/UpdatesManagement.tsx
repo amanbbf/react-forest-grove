@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Search } from "lucide-react";
 
 interface Update {
   id: string;
@@ -26,6 +26,7 @@ const UpdatesManagement = () => {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [currentUpdate, setCurrentUpdate] = useState<Update | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [newUpdate, setNewUpdate] = useState({
     title: "",
     content: "",
@@ -67,7 +68,7 @@ const UpdatesManagement = () => {
 
   const updateMutation = useMutation({
     mutationFn: async (update: Update) => {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("updates")
         .update({
           title: update.title,
@@ -76,12 +77,12 @@ const UpdatesManagement = () => {
         })
         .eq("id", update.id);
       if (error) throw error;
-      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["updates"] });
       setIsEditing(false);
       setCurrentUpdate(null);
+      setNewUpdate({ title: "", content: "", status: "published" });
       toast.success("Update modified successfully!");
     },
     onError: (error) => {
@@ -131,6 +132,10 @@ const UpdatesManagement = () => {
       deleteMutation.mutate(id);
     }
   };
+
+  const filteredUpdates = updates?.filter((update) =>
+    update.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -189,8 +194,20 @@ const UpdatesManagement = () => {
         </CardContent>
       </Card>
 
+      <div className="mb-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search updates..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+      </div>
+
       <div className="grid gap-4">
-        {updates?.map((update: Update) => (
+        {filteredUpdates?.map((update: Update) => (
           <Card key={update.id}>
             <CardHeader>
               <div className="flex justify-between items-start">

@@ -65,6 +65,29 @@ export function CertificateVerification() {
     }
   }
 
+  const handleDownload = async (fileUrl: string) => {
+    try {
+      const { data, error } = await supabase.storage
+        .from('certificates')
+        .download(fileUrl.replace('certificates/', ''));
+      
+      if (error) throw error;
+      
+      // Create a download link
+      const url = URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileUrl.split('/').pop() || 'certificate';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download error:', error);
+      toast.error('Error downloading certificate');
+    }
+  };
+
   return (
     <div className="w-full max-w-2xl mx-auto p-4">
       <Card>
@@ -159,12 +182,10 @@ export function CertificateVerification() {
                         variant="outline"
                         size="sm"
                         className="gap-2"
-                        asChild
+                        onClick={() => handleDownload(certificate.file_url!)}
                       >
-                        <a href={certificate.file_url} target="_blank" rel="noopener noreferrer">
-                          <Download className="h-4 w-4" />
-                          Download Certificate
-                        </a>
+                        <Download className="h-4 w-4" />
+                        Download Certificate
                       </Button>
                     </dd>
                   </div>
