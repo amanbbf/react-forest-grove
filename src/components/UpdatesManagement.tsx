@@ -59,7 +59,12 @@ const UpdatesManagement = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (update: Update) => {
+    mutationFn: async (update: {
+      id: string;
+      title: string;
+      content: string;
+      status: string;
+    }) => {
       const { error } = await supabase
         .from("updates")
         .update({
@@ -100,7 +105,7 @@ const UpdatesManagement = () => {
     e.preventDefault();
     if (isEditing && currentUpdate) {
       updateMutation.mutate({
-        ...currentUpdate,
+        id: currentUpdate.id,
         title: newUpdate.title,
         content: newUpdate.content,
         status: newUpdate.status,
