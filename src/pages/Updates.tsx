@@ -11,8 +11,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 const Updates = () => {
+  const navigate = useNavigate();
+  
   const { data: updates, isLoading } = useQuery({
     queryKey: ["public-updates"],
     queryFn: async () => {
@@ -67,6 +70,7 @@ const Updates = () => {
                   <Button 
                     variant="outline" 
                     className="mt-auto w-full group hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+                    onClick={() => navigate(`/updates/${update.id}`)}
                   >
                     Learn More
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />

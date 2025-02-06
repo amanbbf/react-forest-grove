@@ -4,6 +4,7 @@ import Contact from "./pages/Contact";
 import Services from "./pages/Services";
 import Admin from "./pages/Admin";
 import Updates from "./pages/Updates";
+import UpdateView from "./pages/UpdateView";
 import Login from "./pages/Login";
 import { Toaster } from "./components/ui/sonner";
 
@@ -16,6 +17,7 @@ function App() {
         <Route path="/services" element={<Services />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/updates" element={<Updates />} />
+        <Route path="/updates/:id" element={<UpdateView />} />
         <Route path="/login" element={<Login />} />
       </Routes>
       <Toaster />
