@@ -19,10 +19,10 @@ const UpdateView = () => {
       
       const { data, error } = await supabase
         .from("updates")
-        .select()
-        .eq('id', id)
-        .eq('status', 'published')
-        .maybeSingle();
+        .select("*")
+        .eq("id", id)
+        .eq("status", "published")
+        .single();
 
       if (error) {
         toast({
@@ -79,7 +79,7 @@ const UpdateView = () => {
           <article className="max-w-3xl mx-auto">
             <h1 className="text-4xl font-bold text-primary mb-4">{update.title}</h1>
             <p className="text-muted-foreground mb-8">
-              Published on {format(new Date(update.published_at || ''), "MMMM dd, yyyy")}
+              Published on {update.published_at ? format(new Date(update.published_at), "MMMM dd, yyyy") : 'Not published'}
             </p>
             <div 
               className="prose prose-lg max-w-none"
