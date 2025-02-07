@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,7 +34,10 @@ const UpdatesManagement = () => {
         .select("*")
         .order("published_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        toast.error("Failed to load updates");
+        throw error;
+      }
       return data;
     },
   });
@@ -44,7 +48,10 @@ const UpdatesManagement = () => {
       content: string;
       status: string;
     }) => {
-      const { data, error } = await supabase.from("updates").insert([newUpdate]);
+      const { data, error } = await supabase
+        .from("updates")
+        .insert([{ ...newUpdate, published_at: new Date().toISOString() }]);
+      
       if (error) throw error;
       return data;
     },
@@ -71,8 +78,10 @@ const UpdatesManagement = () => {
           title: update.title,
           content: update.content,
           status: update.status,
+          updated_at: new Date().toISOString(),
         })
         .eq("id", update.id);
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -135,7 +144,13 @@ const UpdatesManagement = () => {
     update.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) {
+    return <div className="flex justify-center items-center min-h-[200px]">
+      <div className="animate-pulse text-lg text-muted-foreground">
+        Loading updates...
+      </div>
+    </div>;
+  }
 
   return (
     <div className="space-y-8">
