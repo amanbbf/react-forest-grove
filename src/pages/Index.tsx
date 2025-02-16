@@ -1,10 +1,33 @@
+
 import MainNav from "@/components/MainNav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Code, Users, Lightbulb, Award, BadgeCheck } from "lucide-react";
 import { CertificateVerification } from "@/components/CertificateVerification";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
+  const { data: activeCertifications, isLoading } = useQuery({
+    queryKey: ["active-certifications"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("certificates")
+        .select("*")
+        .eq("status", "valid")
+        .order("created_at", { ascending: false })
+        .limit(3);
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const maskCertificateNumber = (number: string) => {
+    if (number.length <= 4) return "****";
+    return "****" + number.slice(-4);
+  };
+
   const services = [
     {
       icon: <Code className="w-6 h-6" />,
@@ -20,24 +43,6 @@ const Index = () => {
       icon: <Lightbulb className="w-6 h-6" />,
       title: "Digital Innovation",
       description: "Transform your business with cutting-edge technology solutions and digital strategy consulting."
-    }
-  ];
-
-  const certifications = [
-    {
-      icon: <Award className="w-8 h-8 text-primary" />,
-      name: "ISO 27001 Certified",
-      description: "Information Security Management System certification ensuring highest security standards."
-    },
-    {
-      icon: <BadgeCheck className="w-8 h-8 text-primary" />,
-      name: "AWS Advanced Consulting Partner",
-      description: "Recognized expertise in AWS cloud solutions and implementations."
-    },
-    {
-      icon: <Award className="w-8 h-8 text-primary" />,
-      name: "Microsoft Gold Partner",
-      description: "Elite partnership status for Microsoft technology solutions and services."
     }
   ];
 
@@ -110,27 +115,55 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Certifications Section */}
+      {/* Active Certifications Section */}
       <section className="py-20 bg-accent/20">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">Active Certifications</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {certifications.map((cert, index) => (
-              <Card 
-                key={index} 
-                className="border-2 border-accent hover:border-primary transition-colors duration-300"
-              >
-                <CardContent className="pt-6">
-                  <div className="flex flex-col items-center">
-                    <div className="mb-4">
-                      {cert.icon}
+            {isLoading ? (
+              Array(3).fill(null).map((_, index) => (
+                <Card 
+                  key={index}
+                  className="border-2 border-accent hover:border-primary transition-colors duration-300"
+                >
+                  <CardContent className="pt-6">
+                    <div className="flex flex-col items-center animate-pulse">
+                      <div className="w-8 h-8 bg-primary/10 rounded-full mb-4"></div>
+                      <div className="h-6 w-3/4 bg-primary/10 rounded mb-2"></div>
+                      <div className="h-4 w-1/2 bg-primary/10 rounded"></div>
                     </div>
-                    <h3 className="text-xl font-semibold mb-2 text-center">{cert.name}</h3>
-                    <p className="text-muted-foreground text-center">{cert.description}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))
+            ) : activeCertifications && activeCertifications.length > 0 ? (
+              activeCertifications.map((cert, index) => (
+                <Card 
+                  key={cert.id}
+                  className="border-2 border-accent hover:border-primary transition-colors duration-300"
+                >
+                  <CardContent className="pt-6">
+                    <div className="flex flex-col items-center">
+                      <div className="mb-4">
+                        <Award className="w-8 h-8 text-primary" />
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2 text-center">
+                        {cert.certification_type}
+                      </h3>
+                      <p className="text-muted-foreground text-center mb-2">
+                        Certificate: {maskCertificateNumber(cert.certificate_number)}
+                      </p>
+                      <p className="text-sm text-primary font-medium">
+                        Active until: {new Date(cert.expiry_date).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-3 text-center text-muted-foreground">
+                No active certifications found
+              </div>
+            )}
           </div>
         </div>
       </section>
