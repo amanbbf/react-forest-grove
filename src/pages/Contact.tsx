@@ -1,167 +1,119 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+
+import MainNav from "@/components/MainNav";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Mail, Phone, MapPin } from "lucide-react";
-import MainNav from "@/components/MainNav";
-
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  subject: z.string().min(5, {
-    message: "Subject must be at least 5 characters.",
-  }),
-  message: z.string().min(10, {
-    message: "Message must be at least 10 characters.",
-  }),
-});
+import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
 
 const Contact = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    },
-  });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success("Message sent successfully! We'll get back to you soon.");
+  };
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Here you would typically send the form data to your backend
-    console.log(values);
-    toast.success("Message sent successfully!");
-    form.reset();
-  }
+  const contactInfo = [
+    {
+      icon: <Mail className="w-6 h-6" />,
+      title: "Email",
+      value: "contact@company.com"
+    },
+    {
+      icon: <Phone className="w-6 h-6" />,
+      title: "Phone",
+      value: "+1 (555) 123-4567"
+    },
+    {
+      icon: <MapPin className="w-6 h-6" />,
+      title: "Address",
+      value: "123 Business Ave, Tech City, TC 12345"
+    }
+  ];
 
   return (
-    <>
+    <div className="min-h-screen bg-background">
       <MainNav />
-      <div className="container mx-auto px-4 pt-24 pb-16">
-        <h1 className="text-4xl font-bold text-center mb-12">Contact Us</h1>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Contact Form */}
-          <div className="bg-card rounded-lg p-6 shadow-lg">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Your name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input placeholder="your.email@example.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="subject"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Subject</FormLabel>
-                      <FormControl>
-                        <Input placeholder="What is this about?" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="message"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Message</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Your message..."
-                          className="min-h-[150px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="w-full">
-                  Send Message
-                </Button>
-              </form>
-            </Form>
-          </div>
 
-          {/* Contact Information */}
-          <div className="space-y-8">
-            <div className="bg-card rounded-lg p-6 shadow-lg">
-              <h2 className="text-2xl font-semibold mb-6">Contact Information</h2>
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-primary" />
-                  <p>contact@techconsulting.com</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Phone className="h-5 w-5 text-primary" />
-                  <p>+1 (555) 123-4567</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <MapPin className="h-5 w-5 text-primary" />
-                  <p>123 Tech Street, Silicon Valley, CA 94025</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Map */}
-            <div className="bg-card rounded-lg p-6 shadow-lg">
-              <h2 className="text-2xl font-semibold mb-6">Location</h2>
-              <div className="aspect-video rounded-lg overflow-hidden bg-muted">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d101439.59314821821!2d-122.19587571720309!3d37.44923229621524!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fb7495bec0189%3A0x7c17d44a466baf9b!2sPalo%20Alto%2C%20CA!5e0!3m2!1sen!2sus!4v1708644547943!5m2!1sen!2sus"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                ></iframe>
-              </div>
-            </div>
+      {/* Hero Section */}
+      <section className="relative pt-20 pb-16 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-accent/20 to-background" />
+        <div className="relative container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-5xl md:text-6xl font-bold mb-8 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
+              Get in Touch
+            </h1>
+            <p className="text-xl text-muted-foreground leading-relaxed">
+              Have questions about our services? We're here to help.
+              Reach out to us using any of the methods below.
+            </p>
           </div>
         </div>
-      </div>
-    </>
+      </section>
+
+      {/* Contact Info Section */}
+      <section className="py-24">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
+            {contactInfo.map((info, index) => (
+              <Card key={index} className="border-2 border-accent hover:border-primary transition-all duration-300 group hover:shadow-lg">
+                <CardContent className="p-6 flex flex-col items-center text-center">
+                  <div className="rounded-full bg-primary/10 p-4 mb-4 group-hover:bg-primary/20 transition-colors">
+                    {info.icon}
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">{info.title}</h3>
+                  <p className="text-muted-foreground">{info.value}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Contact Form */}
+          <Card className="max-w-2xl mx-auto border-2 border-accent">
+            <CardContent className="p-8">
+              <h2 className="text-2xl font-semibold mb-6">Send us a Message</h2>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label htmlFor="name" className="text-sm font-medium">
+                      Name
+                    </label>
+                    <Input id="name" placeholder="Your name" required />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="text-sm font-medium">
+                      Email
+                    </label>
+                    <Input id="email" type="email" placeholder="Your email" required />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="subject" className="text-sm font-medium">
+                    Subject
+                  </label>
+                  <Input id="subject" placeholder="Message subject" required />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="message" className="text-sm font-medium">
+                    Message
+                  </label>
+                  <Textarea
+                    id="message"
+                    placeholder="Your message"
+                    className="min-h-[150px]"
+                    required
+                  />
+                </div>
+                <Button type="submit" className="w-full gap-2">
+                  Send Message
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+    </div>
   );
 };
 
