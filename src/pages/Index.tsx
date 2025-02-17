@@ -11,8 +11,11 @@ import {
   Building2,
   CheckCircle2
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
+  const navigate = useNavigate();
+  
   const services = [
     {
       icon: <Award className="w-8 h-8" />,
@@ -77,10 +80,19 @@ const Index = () => {
             We specialize in providing comprehensive consultancy services, training programs, and manpower solutions to enhance your business operations.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button size="lg" className="gap-2 px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all">
+            <Button 
+              size="lg" 
+              className="gap-2 px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all"
+              onClick={() => navigate('/contact')}
+            >
               Get a Free Consultation <ArrowRight className="w-5 h-5" />
             </Button>
-            <Button size="lg" variant="outline" className="gap-2 px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="gap-2 px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all"
+              onClick={() => navigate('/services')}
+            >
               Explore Our Services <ArrowRight className="w-5 h-5" />
             </Button>
           </div>
@@ -150,7 +162,11 @@ const Index = () => {
             <p className="text-xl text-muted-foreground mb-12 leading-relaxed">
               Let's discuss how our services can help you achieve excellence in your industry.
             </p>
-            <Button size="lg" className="gap-2 px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all">
+            <Button 
+              size="lg" 
+              className="gap-2 px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all"
+              onClick={() => navigate('/contact')}
+            >
               Contact Us Today <ArrowRight className="w-5 h-5" />
             </Button>
           </div>
