@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import { AdminSidebar } from "./AdminSidebar";
@@ -5,9 +6,10 @@ import { CertificateList } from "./CertificateList";
 import { CertificateForm } from "./CertificateForm";
 import { Settings } from "./Settings";
 import UpdatesManagement from "./UpdatesManagement";
+import SocialMediaManagement from "./SocialMediaManagement";
 import { Button } from "./ui/button";
 
-type ViewType = "viewAll" | "add" | "settings" | "updates" | "edit";
+type ViewType = "viewAll" | "add" | "settings" | "updates" | "edit" | "social";
 
 export function AdminDashboard() {
   const [currentView, setCurrentView] = useState<ViewType>("viewAll");
@@ -24,6 +26,8 @@ export function AdminDashboard() {
         return <Settings />;
       case "updates":
         return <UpdatesManagement />;
+      case "social":
+        return <SocialMediaManagement />;
       default:
         return <CertificateList onEdit={(cert) => {
           setSelectedCertificate(cert);

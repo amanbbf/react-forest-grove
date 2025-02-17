@@ -1,69 +1,74 @@
-import { FileText, Plus, Settings, Bell } from "lucide-react";
+
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
+  LayoutDashboard,
+  Plus,
+  Settings as SettingsIcon,
+  Bell,
+  Share2
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
-type ViewType = "viewAll" | "add" | "settings" | "updates";
-
-const menuItems = [
-  {
-    title: "All Certificates",
-    icon: FileText,
-    action: "viewAll" as ViewType
-  },
-  {
-    title: "Add Certificate",
-    icon: Plus,
-    action: "add" as ViewType
-  },
-  {
-    title: "Updates",
-    icon: Bell,
-    action: "updates" as ViewType
-  },
-  {
-    title: "Settings",
-    icon: Settings,
-    action: "settings" as ViewType
-  }
-];
+type Action = "viewAll" | "add" | "settings" | "updates" | "social" | "edit";
 
 interface AdminSidebarProps {
-  onActionSelect?: (action: string) => void;
-  currentView?: string;
+  onActionSelect: (action: Action) => void;
+  currentView: Action;
 }
 
 export function AdminSidebar({ onActionSelect, currentView }: AdminSidebarProps) {
+  const menuItems = [
+    {
+      icon: <LayoutDashboard className="h-4 w-4" />,
+      label: "Certificates",
+      action: "viewAll"
+    },
+    {
+      icon: <Plus className="h-4 w-4" />,
+      label: "Add Certificate",
+      action: "add"
+    },
+    {
+      icon: <Bell className="h-4 w-4" />,
+      label: "Updates",
+      action: "updates"
+    },
+    {
+      icon: <Share2 className="h-4 w-4" />,
+      label: "Social Media",
+      action: "social"
+    },
+    {
+      icon: <SettingsIcon className="h-4 w-4" />,
+      label: "Settings",
+      action: "settings"
+    }
+  ];
+
   return (
-    <Sidebar className="h-screen border-r">
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Certificate Management</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    onClick={() => onActionSelect?.(item.action)}
-                    tooltip={item.title}
-                    data-active={currentView === item.action}
-                  >
-                    <item.icon className="w-4 h-4" />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+    <div className="pb-12 min-h-screen w-64 bg-muted/40">
+      <div className="space-y-4 py-4">
+        <div className="px-3 py-2">
+          <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+            Admin Dashboard
+          </h2>
+          <div className="space-y-1">
+            {menuItems.map((item) => (
+              <Button
+                key={item.action}
+                variant={currentView === item.action ? "secondary" : "ghost"}
+                className={cn("w-full justify-start gap-2", {
+                  "bg-secondary": currentView === item.action,
+                })}
+                onClick={() => onActionSelect(item.action as Action)}
+              >
+                {item.icon}
+                {item.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

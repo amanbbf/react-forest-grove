@@ -1,16 +1,40 @@
 
+import { useState, useEffect } from "react";
 import MainNav from "@/components/MainNav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
-import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
+import { Mail, Phone, MapPin, ChevronDown, ChevronUp } from "lucide-react";
+import * as Icons from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+
+type SocialMediaLink = {
+  platform: string;
+  url: string;
+  icon: string;
+  display_order: number;
+};
 
 const Contact = () => {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.success("Message sent successfully! We'll get back to you soon.");
+  const [showAllLinks, setShowAllLinks] = useState(false);
+  const [socialLinks, setSocialLinks] = useState<SocialMediaLink[]>([]);
+
+  useEffect(() => {
+    fetchSocialLinks();
+  }, []);
+
+  const fetchSocialLinks = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('social_media_links')
+        .select('*')
+        .eq('is_visible', true)
+        .order('display_order');
+      
+      if (error) throw error;
+      setSocialLinks(data);
+    } catch (error) {
+      console.error('Error fetching social links:', error);
+    }
   };
 
   const contactInfo = [
@@ -30,6 +54,8 @@ const Contact = () => {
       value: "123 Business Ave, Tech City, TC 12345"
     }
   ];
+
+  const displayedLinks = showAllLinks ? socialLinks : socialLinks.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-background">
@@ -68,49 +94,42 @@ const Contact = () => {
             ))}
           </div>
 
-          {/* Contact Form */}
-          <Card className="max-w-2xl mx-auto border-2 border-accent">
-            <CardContent className="p-8">
-              <h2 className="text-2xl font-semibold mb-6">Send us a Message</h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm font-medium">
-                      Name
-                    </label>
-                    <Input id="name" placeholder="Your name" required />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-medium">
-                      Email
-                    </label>
-                    <Input id="email" type="email" placeholder="Your email" required />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="subject" className="text-sm font-medium">
-                    Subject
-                  </label>
-                  <Input id="subject" placeholder="Message subject" required />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="message" className="text-sm font-medium">
-                    Message
-                  </label>
-                  <Textarea
-                    id="message"
-                    placeholder="Your message"
-                    className="min-h-[150px]"
-                    required
-                  />
-                </div>
-                <Button type="submit" className="w-full gap-2">
-                  Send Message
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+          {/* Social Media Links */}
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-2xl font-semibold text-center mb-8">Connect With Us</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+              {displayedLinks.map((link) => {
+                const IconComponent = Icons[link.icon as keyof typeof Icons];
+                return (
+                  <a
+                    key={link.platform}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 p-4 rounded-lg border-2 border-accent hover:border-primary transition-all duration-300 hover:shadow-lg"
+                  >
+                    <div className="rounded-full bg-primary/10 p-2">
+                      {IconComponent && <IconComponent className="w-5 h-5" />}
+                    </div>
+                    <span className="font-medium">{link.platform}</span>
+                  </a>
+                );
+              })}
+            </div>
+            {socialLinks.length > 3 && (
+              <Button
+                variant="outline"
+                className="mx-auto flex items-center gap-2"
+                onClick={() => setShowAllLinks(!showAllLinks)}
+              >
+                {showAllLinks ? (
+                  <>Show Less <ChevronUp className="w-4 h-4" /></>
+                ) : (
+                  <>Show More <ChevronDown className="w-4 h-4" /></>
+                )}
+              </Button>
+            )}
+          </div>
         </div>
       </section>
     </div>

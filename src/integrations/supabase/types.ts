@@ -51,6 +51,39 @@ export type Database = {
         }
         Relationships: []
       }
+      social_media_links: {
+        Row: {
+          created_at: string | null
+          display_order: number
+          icon: string
+          id: string
+          is_visible: boolean | null
+          platform: string
+          updated_at: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number
+          icon: string
+          id?: string
+          is_visible?: boolean | null
+          platform: string
+          updated_at?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number
+          icon?: string
+          id?: string
+          is_visible?: boolean | null
+          platform?: string
+          updated_at?: string | null
+          url?: string
+        }
+        Relationships: []
+      }
       updates: {
         Row: {
           author_id: string | null
