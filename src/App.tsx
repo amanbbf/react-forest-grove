@@ -9,6 +9,7 @@ import Contact from "@/pages/Contact";
 import NotFound from "@/pages/NotFound";
 import Login from "@/pages/Login";
 import CertificateVerification from "@/pages/CertificateVerification";
+import AboutUs from "@/pages/AboutUs";
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
         <Route path="/" element={<Index />} />
         <Route path="/admin/*" element={<Admin />} />
         <Route path="/services" element={<Services />} />
+        <Route path="/about" element={<AboutUs />} />
         <Route path="/updates" element={<Updates />} />
         <Route path="/updates/:id" element={<UpdateView />} />
         <Route path="/contact" element={<Contact />} />
