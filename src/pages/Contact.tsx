@@ -3,8 +3,19 @@ import { useState, useEffect } from "react";
 import MainNav from "@/components/MainNav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, Phone, MapPin, ChevronDown, ChevronUp } from "lucide-react";
-import * as Icons from "lucide-react";
+import { 
+  Mail, 
+  Phone, 
+  MapPin, 
+  ChevronDown, 
+  ChevronUp,
+  Twitter,
+  Linkedin,
+  MessageCircle,
+  Send,
+  MessageSquare,
+  Youtube
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type SocialMediaLink = {
@@ -12,6 +23,16 @@ type SocialMediaLink = {
   url: string;
   icon: string;
   display_order: number;
+};
+
+// Map platform names to their corresponding icons
+const platformIcons = {
+  Twitter: Twitter,
+  LinkedIn: Linkedin,
+  WhatsApp: MessageCircle,
+  Telegram: Send,
+  Discord: MessageSquare,
+  YouTube: Youtube
 };
 
 const Contact = () => {
@@ -31,7 +52,7 @@ const Contact = () => {
         .order('display_order');
       
       if (error) throw error;
-      setSocialLinks(data);
+      setSocialLinks(data || []);
     } catch (error) {
       console.error('Error fetching social links:', error);
     }
@@ -99,7 +120,7 @@ const Contact = () => {
             <h2 className="text-2xl font-semibold text-center mb-8">Connect With Us</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
               {displayedLinks.map((link) => {
-                const IconComponent = Icons[link.icon as keyof typeof Icons];
+                const Icon = platformIcons[link.platform as keyof typeof platformIcons];
                 return (
                   <a
                     key={link.platform}
@@ -109,7 +130,7 @@ const Contact = () => {
                     className="flex items-center gap-3 p-4 rounded-lg border-2 border-accent hover:border-primary transition-all duration-300 hover:shadow-lg"
                   >
                     <div className="rounded-full bg-primary/10 p-2">
-                      {IconComponent && <IconComponent className="w-5 h-5" />}
+                      {Icon && <Icon className="w-5 h-5" />}
                     </div>
                     <span className="font-medium">{link.platform}</span>
                   </a>
