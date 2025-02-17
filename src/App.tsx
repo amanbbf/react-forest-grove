@@ -1,28 +1,31 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Contact from "./pages/Contact";
-import Services from "./pages/Services";
-import Admin from "./pages/Admin";
-import Updates from "./pages/Updates";
-import UpdateView from "./pages/UpdateView";
-import Login from "./pages/Login";
-import { Toaster } from "./components/ui/sonner";
 
-function App() {
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Admin from "@/pages/Admin";
+import Services from "@/pages/Services";
+import Updates from "@/pages/Updates";
+import UpdateView from "@/pages/UpdateView";
+import Index from "@/pages/Index";
+import Contact from "@/pages/Contact";
+import NotFound from "@/pages/NotFound";
+import Login from "@/pages/Login";
+import CertificateVerification from "@/pages/CertificateVerification";
+
+const App = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/contact" element={<Contact />} />
+        <Route path="/admin/*" element={<Admin />} />
         <Route path="/services" element={<Services />} />
-        <Route path="/admin" element={<Admin />} />
         <Route path="/updates" element={<Updates />} />
         <Route path="/updates/:id" element={<UpdateView />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/verify-certificate" element={<CertificateVerification />} />
         <Route path="/login" element={<Login />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
-      <Toaster />
     </Router>
   );
-}
+};
 
 export default App;
