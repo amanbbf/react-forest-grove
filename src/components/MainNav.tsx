@@ -1,6 +1,7 @@
+
 import * as React from "react";
 import { Link } from "react-router-dom";
-import { Home, Mail, Briefcase, UserCircle2, Bell } from "lucide-react";
+import { Home, Mail, Briefcase, UserCircle2, Bell, Shield } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   NavigationMenu,
@@ -27,6 +28,11 @@ const MainNav = () => {
       label: "Updates",
       icon: <Bell className="w-4 h-4" />,
       path: "/updates",
+    },
+    {
+      label: "Verify Certificate",
+      icon: <Shield className="w-4 h-4" />,
+      path: "/verify-certificate",
     },
     {
       label: "Admin Login",
