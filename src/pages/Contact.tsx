@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
+// Types
 type SocialMediaLink = {
   platform: string;
   url: string;
@@ -25,7 +26,7 @@ type SocialMediaLink = {
   display_order: number;
 };
 
-// Map platform names to their corresponding icons
+// Static data
 const platformIcons = {
   Twitter: Twitter,
   LinkedIn: Linkedin,
@@ -33,48 +34,54 @@ const platformIcons = {
   Telegram: Send,
   Discord: MessageSquare,
   YouTube: Youtube
-};
+} as const;
 
-const Contact = () => {
+const contactInfo = [
+  {
+    icon: <Mail className="w-6 h-6" />,
+    title: "Email",
+    value: "contact@company.com"
+  },
+  {
+    icon: <Phone className="w-6 h-6" />,
+    title: "Phone",
+    value: "+1 (555) 123-4567"
+  },
+  {
+    icon: <MapPin className="w-6 h-6" />,
+    title: "Address",
+    value: "123 Business Ave, Tech City, TC 12345"
+  }
+];
+
+// Component
+export default function Contact() {
   const [showAllLinks, setShowAllLinks] = useState(false);
   const [socialLinks, setSocialLinks] = useState<SocialMediaLink[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    async function fetchSocialLinks() {
+      try {
+        const { data, error } = await supabase
+          .from('social_media_links')
+          .select('*')
+          .eq('is_visible', true)
+          .order('display_order');
+        
+        if (error) throw error;
+        setSocialLinks(data || []);
+      } catch (err) {
+        console.error('Error fetching social links:', err);
+        setError('Failed to load social media links');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
     fetchSocialLinks();
   }, []);
-
-  const fetchSocialLinks = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('social_media_links')
-        .select('*')
-        .eq('is_visible', true)
-        .order('display_order');
-      
-      if (error) throw error;
-      setSocialLinks(data || []);
-    } catch (error) {
-      console.error('Error fetching social links:', error);
-    }
-  };
-
-  const contactInfo = [
-    {
-      icon: <Mail className="w-6 h-6" />,
-      title: "Email",
-      value: "contact@company.com"
-    },
-    {
-      icon: <Phone className="w-6 h-6" />,
-      title: "Phone",
-      value: "+1 (555) 123-4567"
-    },
-    {
-      icon: <MapPin className="w-6 h-6" />,
-      title: "Address",
-      value: "123 Business Ave, Tech City, TC 12345"
-    }
-  ];
 
   const displayedLinks = showAllLinks ? socialLinks : socialLinks.slice(0, 3);
 
@@ -118,43 +125,49 @@ const Contact = () => {
           {/* Social Media Links */}
           <div className="max-w-2xl mx-auto">
             <h2 className="text-2xl font-semibold text-center mb-8">Connect With Us</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-              {displayedLinks.map((link) => {
-                const Icon = platformIcons[link.platform as keyof typeof platformIcons];
-                return (
-                  <a
-                    key={link.platform}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-4 rounded-lg border-2 border-accent hover:border-primary transition-all duration-300 hover:shadow-lg"
+            {error ? (
+              <p className="text-center text-destructive">{error}</p>
+            ) : isLoading ? (
+              <div className="text-center">Loading social media links...</div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                  {displayedLinks.map((link) => {
+                    const Icon = platformIcons[link.platform as keyof typeof platformIcons];
+                    return (
+                      <a
+                        key={link.platform}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-4 rounded-lg border-2 border-accent hover:border-primary transition-all duration-300 hover:shadow-lg"
+                      >
+                        <div className="rounded-full bg-primary/10 p-2">
+                          {Icon && <Icon className="w-5 h-5" />}
+                        </div>
+                        <span className="font-medium">{link.platform}</span>
+                      </a>
+                    );
+                  })}
+                </div>
+                {socialLinks.length > 3 && (
+                  <Button
+                    variant="outline"
+                    className="mx-auto flex items-center gap-2"
+                    onClick={() => setShowAllLinks(!showAllLinks)}
                   >
-                    <div className="rounded-full bg-primary/10 p-2">
-                      {Icon && <Icon className="w-5 h-5" />}
-                    </div>
-                    <span className="font-medium">{link.platform}</span>
-                  </a>
-                );
-              })}
-            </div>
-            {socialLinks.length > 3 && (
-              <Button
-                variant="outline"
-                className="mx-auto flex items-center gap-2"
-                onClick={() => setShowAllLinks(!showAllLinks)}
-              >
-                {showAllLinks ? (
-                  <>Show Less <ChevronUp className="w-4 h-4" /></>
-                ) : (
-                  <>Show More <ChevronDown className="w-4 h-4" /></>
+                    {showAllLinks ? (
+                      <>Show Less <ChevronUp className="w-4 h-4" /></>
+                    ) : (
+                      <>Show More <ChevronDown className="w-4 h-4" /></>
+                    )}
+                  </Button>
                 )}
-              </Button>
+              </>
             )}
           </div>
         </div>
       </section>
     </div>
   );
-};
-
-export default Contact;
+}
