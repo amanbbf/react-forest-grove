@@ -5,11 +5,8 @@ import { Home, Mail, Briefcase, UserCircle2, Bell, Shield, Users } from "lucide-
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
@@ -43,18 +40,18 @@ const MainNav = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-b border-border">
-      <div className="container mx-auto px-4">
+    <nav className="nav-responsive">
+      <div className="container-responsive">
         <NavigationMenu className="mx-auto">
-          <NavigationMenuList className="gap-2">
+          <NavigationMenuList className="gap-1 sm:gap-2">
             {navItems.map((item) => (
               <NavigationMenuItem key={item.path}>
                 <Link
                   to={item.path}
-                  className={navigationMenuTriggerStyle() + " gap-2"}
+                  className={navigationMenuTriggerStyle() + " gap-1 sm:gap-2 px-2 sm:px-4 py-2"}
                 >
                   {item.icon}
-                  {!isMobile && <span>{item.label}</span>}
+                  {!isMobile && <span className="hidden sm:inline">{item.label}</span>}
                 </Link>
               </NavigationMenuItem>
             ))}
