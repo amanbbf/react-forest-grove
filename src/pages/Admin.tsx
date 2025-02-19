@@ -1,8 +1,10 @@
+
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AdminDashboard } from "@/components/AdminDashboard";
 import { supabase } from "@/integrations/supabase/client";
+import MainNav from "@/components/MainNav";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -18,8 +20,13 @@ export default function Admin() {
   }, [navigate]);
 
   return (
-    <SidebarProvider defaultOpen>
-      <AdminDashboard />
-    </SidebarProvider>
+    <>
+      <MainNav />
+      <div className="pt-16"> {/* Add padding-top to account for fixed navbar */}
+        <SidebarProvider defaultOpen>
+          <AdminDashboard />
+        </SidebarProvider>
+      </div>
+    </>
   );
 }
